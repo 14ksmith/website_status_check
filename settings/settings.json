@@ -1,0 +1,8 @@
+{
+    "hours_between_checks": 5,
+    "websites_to_check": {
+        "google": "http://www.google.com",
+        "facebook": "http://www.facebook.com",
+        "fanfic.com": "http://fanfiction.net"
+    }
+}
