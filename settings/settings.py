@@ -1,8 +1,8 @@
 import json
 
 
-def open_settings():
-    """Get the settings from the property search settings json. Return parameters."""
+def read_settings():
+    """Get the settings from the settings.json. Return parameters."""
 
     with open("settings/settings.json") as settings:
         website_status_settings = json.load(settings)

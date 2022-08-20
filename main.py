@@ -1,24 +1,20 @@
-from settings.open_settings import open_settings
-from url_request.url_request import get_websites_status
+from settings.settings import read_settings
+from url_request.url_monitor import get_websites_status
 import asyncio
 from time import perf_counter
 
 
 if __name__ == "__main__":
 
-    settings = open_settings()
-    # Second return value from open_settings is the dict of websites. set urls to the values.
-    urls = settings[1].values()
-
     t1_start = perf_counter()
 
-    # ----------------------------- Async --------------------------------#
+    # ----------------------------- Async Version --------------------------------#
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(get_websites_status(urls=urls))
+    loop.run_until_complete(get_websites_status())
     # --------------------------------------------------------------------#
 
-    # ----------------------------- Not Async ----------------------------#
-    # get_websites_status(urls=urls)
+    # ----------------------------- Sync Version ----------------------------#
+    # get_websites_status()
     # --------------------------------------------------------------------#
 
     t1_stop = perf_counter()

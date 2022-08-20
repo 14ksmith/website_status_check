@@ -1,8 +1,9 @@
 {
-    "hours_between_checks": 5,
+    "seconds_between_checks": 60,
     "websites_to_check": {
         "google": "http://www.google.com",
         "facebook": "http://www.facebook.com",
         "fanfic.com": "http://fanfiction.net"
-    }
+    },
+    "email_server": "smtp.mail.yahoo.com"
 }
