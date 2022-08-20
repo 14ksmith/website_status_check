@@ -1,4 +1,3 @@
-from settings.settings import read_settings
 from url_request.url_monitor import get_websites_status
 import asyncio
 from time import perf_counter
@@ -8,14 +7,8 @@ if __name__ == "__main__":
 
     t1_start = perf_counter()
 
-    # ----------------------------- Async Version --------------------------------#
     loop = asyncio.get_event_loop()
     loop.run_until_complete(get_websites_status())
-    # --------------------------------------------------------------------#
-
-    # ----------------------------- Sync Version ----------------------------#
-    # get_websites_status()
-    # --------------------------------------------------------------------#
 
     t1_stop = perf_counter()
 

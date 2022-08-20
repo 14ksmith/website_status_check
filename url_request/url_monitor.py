@@ -1,10 +1,8 @@
-import requests
-from requests.exceptions import HTTPError
 import json
 import asyncio
 from aiohttp import ClientSession, ClientResponseError
-
 from notifications.email import send_email
+from time import sleep
 
 
 class ReadSettings:
@@ -27,7 +25,17 @@ class ReadSettings:
         self.email_server = website_status_settings.get("email_server")
 
 
-# -------------------------------- Async Version------------------------------------------#
+def send_website_down_email(websites_down, email_server):
+    """If there are websites down (in the websites_down list) send an email notification."""
+
+    if websites_down:
+
+        email_body = f"The following websites are currently down:\n\n"
+
+        for website in websites_down:
+            email_body += f"{website}\n"
+
+        send_email(email_body=email_body, server=email_server)
 
 
 async def request_url(session: ClientSession, url):
@@ -43,68 +51,33 @@ async def get_websites_status():
 
     settings = ReadSettings()
 
-    # add a list of coroutines to complete
-    async with ClientSession() as session:
+    while True:
 
-        websites_down = []
+        # add a list of coroutines to complete
+        async with ClientSession() as session:
 
-        tasks = []
+            websites_down = []
 
-        for url in settings.websites_to_check:
-            print(url)
+            tasks = []
 
-            try:
-                tasks.append(request_url(session=session, url=url))
-                print("This website is working right now :)")
+            for url in settings.websites_to_check:
+                print(url)
 
-            except ClientResponseError as e:
-                print(e)
-                websites_down.append(url)
-                print("This website is currently down.")
+                try:
+                    tasks.append(request_url(session=session, url=url))
+                    print("This website is working right now :)")
 
-        # execute all the tasks and wait for them to complete
-        asyncio.wait(tasks)
+                except ClientResponseError as e:
+                    print(e)
+                    websites_down.append(url)
+                    print("This website is currently down.")
 
-    return websites_down
+            # execute all the tasks and wait for them to complete
+            asyncio.wait(tasks)
 
+        send_website_down_email(
+            websites_down=websites_down, email_server=settings.email_server
+        )
 
-# --------------------------------------------------------------------------------#
-
-
-# -------------------------- Sync Version------------------------------------------#
-
-# def request_url(url):
-#     """Send request for the given url. Raise the status of the request."""
-
-#     response = requests.get(url=url)
-
-#     response.raise_for_status()
-
-
-# def get_websites_status(urls):
-#     """For each url provided, get the status of the request."""
-
-#     for url in urls:
-#         print(url)
-
-#         try:
-#             request_url(url=url)
-#             print("This website is working right now :)")
-
-#         except HTTPError as e:
-#             print(e)
-#             print("This website is currently down.")
-# --------------------------------------------------------------------------------#
-
-
-def send_website_down_email(websites_down):
-    """If there are websites down (in the websites_down list) send an email notification."""
-
-    settings = ReadSettings()
-
-    email_body = ""
-
-    if websites_down:
-        pass
-
-    send_email(email_body=email_body, server=settings.email_server)
+        # Sleep the program for the designated time between requests
+        sleep(settings.seconds_between_status_checks)
