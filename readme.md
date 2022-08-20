@@ -45,3 +45,7 @@ Finally, to set up email notifications, follow the steps below:
 ### Running Website Status Checker
 
 To run the program, run `python3 main.py`. The program will run on a loop and update the user if there are any websites down on a schedule set by the user in `settings.json`. If there are no websites down, no email notification will be sent.
+
+#### Attributions:
+
+Icon made by Freepik from www.flaticon.com
