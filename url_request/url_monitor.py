@@ -2,7 +2,6 @@ import json
 import asyncio
 from aiohttp import ClientSession, ClientResponseError
 from notifications.email import send_email
-from time import sleep
 
 
 class ReadSettings:
@@ -41,9 +40,23 @@ def send_website_down_email(websites_down, email_server):
 async def request_url(session: ClientSession, url):
     """Send request for the given url. Raise the status of the request."""
 
-    response = await session.request("GET", url=url)
+    try:
 
-    response.raise_for_status()
+        response = await session.request("GET", url=url)
+        response.raise_for_status()
+        print("This website is working right now :)")
+
+    except ClientResponseError as error:
+        # print(error)
+        if error.status == 403:
+            # websites_down.append(url)
+            print("This website is forbidden.")
+
+        elif error.status == 404:
+            pass
+
+        else:
+            print(url, "unhandled error code", error.status)
 
 
 async def get_websites_status():
@@ -62,22 +75,14 @@ async def get_websites_status():
 
             for url in settings.websites_to_check:
                 print(url)
-
-                try:
-                    tasks.append(request_url(session=session, url=url))
-                    print("This website is working right now :)")
-
-                except ClientResponseError as e:
-                    print(e)
-                    websites_down.append(url)
-                    print("This website is currently down.")
+                tasks.append(request_url(session=session, url=url))
 
             # execute all the tasks and wait for them to complete
-            asyncio.wait(tasks)
+            await asyncio.wait(tasks)
 
         send_website_down_email(
             websites_down=websites_down, email_server=settings.email_server
         )
 
         # Sleep the program for the designated time between requests
-        sleep(settings.seconds_between_status_checks)
+        await asyncio.sleep(settings.seconds_between_status_checks)
