@@ -32,8 +32,11 @@ def send_website_down_email(websites_down, email_server):
     down_websites = False
 
     for website in websites_down:
+        # If the list item is not None
         if website != None:
+            # Add line of text to email_body
             email_body += f"{website}\n"
+            # Change down_website bool to True, which is necessary to send_email
             down_websites = True
 
     if down_websites:
@@ -44,13 +47,16 @@ async def request_url(session: ClientSession, url):
     """Send request for the given url. Raise the status of the request."""
 
     try:
-
+        # Try to request from the url
         response = await session.request("GET", url=url)
+        # Get the status of the request
         response.raise_for_status()
         print(f"{url} is working right now :)")
 
+    # Catch any http errors
     except ClientResponseError as error:
 
+        # Depending on what the error is, either just print a message or return the website (for 500 and 503)
         if error.status == 301:
             print(url, "Permanent Redirect", error.status)
 
@@ -59,7 +65,6 @@ async def request_url(session: ClientSession, url):
 
         elif error.status == 403:
             print(url, "Website Forbidden", error.status)
-            return url
 
         elif error.status == 404:
             print(url, "Website Not Found", error.status)
@@ -80,31 +85,37 @@ async def request_url(session: ClientSession, url):
 
 
 async def request_all_urls(session: ClientSession, urls):
-    """Request all urls in settings and return websites that are down."""
-    output = await asyncio.gather(
+    """Request all urls in settings.json and return websites that are down."""
+
+    # Gather all coroutines to complete
+    websites_down = await asyncio.gather(
         *[request_url(session=session, url=url) for url in urls]
     )
-    return output
+
+    return websites_down
 
 
 async def get_websites_status():
     """For each url provided, get the status of the request."""
 
+    # Set settings variable for the ReadSettings Class
     settings = ReadSettings()
 
+    # Infinite Loop
     while True:
 
-        # add a list of coroutines to complete
         async with ClientSession() as session:
 
             t1 = perf_counter()
 
+            # Await all url requests and set returned list to 'websites_down'
             websites_down = await request_all_urls(
                 session=session, urls=settings.websites_to_check
             )
             t2 = perf_counter()
             print(f"total time: {t2 - t1}")
 
+        # Set email notification of websites down if there are any
         send_website_down_email(
             websites_down=websites_down, email_server=settings.email_server
         )
