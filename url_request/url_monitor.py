@@ -2,6 +2,7 @@ import json
 import asyncio
 from aiohttp import ClientSession, ClientResponseError
 from notifications.email import send_email
+from time import perf_counter
 
 
 class ReadSettings:
@@ -28,12 +29,15 @@ def send_website_down_email(websites_down, email_server):
     """Send an email notification with websites down from websites_down list (ignore 'None')."""
 
     email_body = f"The following websites are currently down:\n\n"
+    down_websites = False
 
     for website in websites_down:
-        if website != "None":
+        if website != None:
             email_body += f"{website}\n"
+            down_websites = True
 
-    send_email(email_body=email_body, server=email_server)
+    if down_websites:
+        send_email(email_body=email_body, server=email_server)
 
 
 async def request_url(session: ClientSession, url):
@@ -93,11 +97,14 @@ async def get_websites_status():
         # add a list of coroutines to complete
         async with ClientSession() as session:
 
+            t1 = perf_counter()
+
             websites_down = await request_all_urls(
                 session=session, urls=settings.websites_to_check
             )
+            t2 = perf_counter()
+            print(f"total time: {t2 - t1}")
 
-        print(websites_down)
         send_website_down_email(
             websites_down=websites_down, email_server=settings.email_server
         )
