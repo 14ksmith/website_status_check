@@ -6,7 +6,7 @@
 
 ## Overview
 
-Website Status Checker is a Python program that allows users to check if all designated websites are up and running correctly. The user can specify however many websites they would like the program to check and requests them asynchronously, allowing for speedy response times. If any websites are not working, the user will be sent an email notification identifying which websites are down.
+Website Status Checker is a Python program that allows users to check if any number of websites are up and running correctly. The user can specify however many websites they would like the program to check and requests them asynchronously, allowing for speedy response times. If any websites are not working, the user will be sent an email notification identifying which websites are down.
 
 ## How to Use Website Status Checker
 
