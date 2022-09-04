@@ -106,14 +106,10 @@ async def get_websites_status():
 
         async with ClientSession() as session:
 
-            t1 = perf_counter()
-
             # Await all url requests and set returned list to 'websites_down'
             websites_down = await request_all_urls(
                 session=session, urls=settings.websites_to_check
             )
-            t2 = perf_counter()
-            print(f"total time: {t2 - t1}")
 
         # Set email notification of websites down if there are any
         send_website_down_email(
