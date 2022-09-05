@@ -14,7 +14,7 @@ Website Status Checker is a Python program that allows users to check if any num
 
 #### Settings
 
-In order to use Website Status Checker, first download all necessary packages by running `requirements.txt`.
+In order to use Website Status Checker, first download all necessary packages by running `pip3 install -r requirements.txt`.
 
 Next, update the settings.json file with the following information. `seconds_between_checks` specifies how many seconds you would like the program to wait before checking website status again. `websites_to_check` contains all of the websites you would like the program to check the status of. And `email_server` tells the program which server you are using to send the email notifications.
 
